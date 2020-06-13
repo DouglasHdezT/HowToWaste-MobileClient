@@ -1,11 +1,12 @@
 import React from 'react';
 
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet,Dimensions } from 'react-native'
+import MapView from "react-native-maps";
 
 const MapTab = props => {
 	return (
-		<View style={ styles.container }>
-			<Text>Map Screen</Text>
+		<View style={styles.container}>
+			<MapView style={styles.mapStyle} />
 		</View>
 	);
 }
@@ -13,9 +14,14 @@ const MapTab = props => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent:"center",
-		alignItems: "center",
-	}
+		backgroundColor: '#fff',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	mapStyle: {
+		width: Dimensions.get('window').width,
+		height: Dimensions.get('window').height,
+	},
 });
 
 export default MapTab;
