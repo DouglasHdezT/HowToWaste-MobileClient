@@ -13,7 +13,17 @@ const Tab = createMaterialBottomTabNavigator();
 const MainScreen = () => {
 	return(
 		<NavigationContainer>
-			<Tab.Navigator shifting = {true}  barStyle = {{ borderTopEndRadius: 15, borderTopStartRadius: 15, backgroundColor: Colors.primaryColor }} >
+			<Tab.Navigator
+				shifting = {true}
+				barStyle = {{
+					borderWidth: 0.5,
+					borderBottomWidth: 1,
+					backgroundColor:Colors.primaryColor,
+					borderTopLeftRadius: 15,
+					borderTopRightRadius: 15,
+					borderColor: 'transparent',
+					overflow: 'hidden',
+				}} >
 				<Tab.Screen name = "Mapa" component = {MapTab} options = {{ tabBarIcon: ({focus, color}) => (<FontAwesome name="map" size={24} color={color} />)}}/>
 				<Tab.Screen name = "Camara" component = {CameraTab} options = {{ tabBarIcon: ({focus, color}) => (<AntDesign name="camera" size={24} color={color} />) }}/>
 				<Tab.Screen name = "Info" component = {MapTab} options = {{ tabBarIcon: ({focus, color}) => (<FontAwesome name="info-circle" size={24} color={color} />)}}/>
