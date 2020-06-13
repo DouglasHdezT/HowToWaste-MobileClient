@@ -5,9 +5,10 @@ import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-nati
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 
-const CameraTab = ({navigation}) => {
+const CameraTab = (props) => {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [type, setType] = useState(Camera.Constants.Type.back);
+	const [{width, height}, setDimensions] = useState({width: 0, height: 0});
 	const isFocused = useIsFocused();
 
 	useEffect(() => {
@@ -24,8 +25,13 @@ const CameraTab = ({navigation}) => {
 		return <Text>No access to camera</Text>;
 	}
 	return (
-		<View style={{ flex: 1, justifyContent: "center", backgroundColor: "#000" }}>
-			{isFocused && <Camera style={{ height: (4 * Dimensions.get("window").width) / 3 }} type={type}>
+		<View
+			onLayout = { (event) => {
+				const { width, height } = event.nativeEvent.layout;
+				setDimensions({width, height});
+			} } 
+			style={{ flex: 1, justifyContent: "center", backgroundColor: "#000" }}>
+			{isFocused && <Camera style={{ height: (4 * width) / 3}} type={type}>
 				<View
 					style={{
 						flex: 1,
@@ -45,7 +51,7 @@ const CameraTab = ({navigation}) => {
 									: Camera.Constants.Type.back
 							);
 						}}>
-						<Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
+						<Text style={{ ...styles.text, fontSize: 16 }}> Flip </Text>
 					</TouchableOpacity>
 				</View>
 			</Camera>}
@@ -53,6 +59,11 @@ const CameraTab = ({navigation}) => {
 	);
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	text: {
+		marginBottom: 10, 
+		color: 'white'
+	}
+});
 
 export default CameraTab;
