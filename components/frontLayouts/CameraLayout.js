@@ -3,6 +3,7 @@ import React from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
+import Colors from '../../constants/Colors';
 
 import TopEndVectorButton from '../buttons/TopEndVectorButton';
 
@@ -19,9 +20,9 @@ const CameraLayout = ({flipCameraAction}) => {
 					borderRadius: 24,
 					justifyContent: "center",
 					alignItems: "center",
-					backgroundColor: "white",
+					backgroundColor: Colors.primaryColor,
 				}}>
-					<Ionicons name="md-reverse-camera" size={32} color="black"/>
+					<Ionicons name="md-reverse-camera" size={32} color="white"/>
 				</View>
 			</TopEndVectorButton>
 
