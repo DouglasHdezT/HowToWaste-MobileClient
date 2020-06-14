@@ -10,10 +10,19 @@ const CameraLayout = ({flipCameraAction}) => {
 	return(
 		<View style = { styles.container }>
 			<TopEndVectorButton
-				width = { 24 }
-				height = { 24 }
+				width = { 48 }
+				height = { 48 }
 				onPress = { flipCameraAction }>
-				<Ionicons name="md-reverse-camera" size={24} color="white" />
+				<View style = {{
+					width: 48,
+					height: 48,
+					borderRadius: 24,
+					justifyContent: "center",
+					alignItems: "center",
+					backgroundColor: "white",
+				}}>
+					<Ionicons name="md-reverse-camera" size={32} color="black"/>
+				</View>
 			</TopEndVectorButton>
 
 			<View style = {{ ...styles.infoLayout,
