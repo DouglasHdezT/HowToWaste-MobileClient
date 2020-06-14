@@ -16,12 +16,13 @@ const MainScreen = () => {
 			<Tab.Navigator
 				shifting = {true}
 				barStyle = {{
-					borderWidth: 0.5,
-					borderBottomWidth: 1,
 					backgroundColor:Colors.primaryColor,
+
+					borderTopWidth: 0.5,
 					borderTopLeftRadius: 15,
 					borderTopRightRadius: 15,
 					borderColor: 'transparent',
+					
 					overflow: 'hidden',
 				}} >
 				<Tab.Screen name = "Mapa" component = {MapTab} options = {{ tabBarIcon: ({focus, color}) => (<FontAwesome name="map" size={24} color={color} />)}}/>
