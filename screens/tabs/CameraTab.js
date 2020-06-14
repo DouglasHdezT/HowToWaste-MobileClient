@@ -5,6 +5,8 @@ import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-nati
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 
+import CameraLayout from '../../components/frontLayouts/CameraLayout';
+
 const CameraTab = (props) => {
 	const [hasPermission, setHasPermission] = useState(null);
 	const [type, setType] = useState(Camera.Constants.Type.back);
@@ -30,39 +32,26 @@ const CameraTab = (props) => {
 				const { width, height } = event.nativeEvent.layout;
 				setDimensions({width, height});
 			} } 
-			style={{ flex: 1, justifyContent: "center", backgroundColor: "#000" }}>
-			{isFocused && <Camera style={{ height: (4 * width) / 3}} type={type}>
-				<View
-					style={{
-						flex: 1,
-						backgroundColor: 'transparent',
-						flexDirection: 'row',
-					}}>
-					<TouchableOpacity
-						style={{
-							flex: 0.1,
-							alignSelf: 'flex-end',
-							alignItems: 'center',
-						}}
-						onPress={() => {
-							setType(
-								type === Camera.Constants.Type.back
-									? Camera.Constants.Type.front
-									: Camera.Constants.Type.back
-							);
-						}}>
-						<Text style={{ ...styles.text, fontSize: 16 }}> Flip </Text>
-					</TouchableOpacity>
-				</View>
-			</Camera>}
+			style={ styles.container }>
+			
+			{isFocused && <Camera style={{ height: height, width: (3 * height) / 4}} type={type}/>}
+
+			<CameraLayout 
+				flipCameraAction = {()=>{
+					setType(type === Camera.Constants.Type.back ? 
+						Camera.Constants.Type.front : 
+						Camera.Constants.Type.back);
+				}}/>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	text: {
-		marginBottom: 10, 
-		color: 'white'
+	container: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "black"
 	}
 });
 
