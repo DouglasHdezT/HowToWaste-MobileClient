@@ -1,11 +1,13 @@
 import React from 'react';
 
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, useWindowDimensions, TouchableOpacity } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
+import BaseStyles from '../../constants/BaseStyles';
 
 import TopEndVectorButton from '../buttons/TopEndVectorButton';
+import ModedText from '../text/ModedText';
 
 const CameraLayout = ({flipCameraAction}) => {
 	return(
@@ -27,12 +29,15 @@ const CameraLayout = ({flipCameraAction}) => {
 			</TopEndVectorButton>
 
 			<View style = {{ ...styles.infoLayout,
-					borderTopStartRadius: useWindowDimensions().width / 10,
-					borderTopEndRadius: useWindowDimensions().width / 10,
+					borderTopStartRadius: useWindowDimensions().width / 5,
+					borderTopEndRadius: useWindowDimensions().width / 5,
 				}}>
 
-				<View style = {{ flex: 1, backgroundColor: "red" }}>
-
+				<View style = {{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+					<TouchableOpacity style = {{ justifyContent: "center", alignItems: "center" }}>
+						<AntDesign name="scan1" size={32} color="black" />
+						<ModedText title center centerV>Escanear</ModedText>
+					</TouchableOpacity>
 				</View>
 
 			</View>
@@ -56,7 +61,7 @@ const styles = StyleSheet.create({
 	},
 	infoLayout:{
 		height: "20%",
-		width: "50%",
+		width: "100%",
 		paddingTop:10, 
 
 		justifyContent: "flex-end",
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
 		borderColor:"white",
 		
 		backgroundColor: "white",
-		transform:[{scaleX:2}]
+		...BaseStyles.materialShadowUp
 	}
 });
 
