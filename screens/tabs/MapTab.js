@@ -62,12 +62,16 @@ const MapTab = props => {
 	const [region, setRegion] = useState(null);
 	const [position, setPosition] = useState(null);
 	const [markersData, setMarkersData] = useState([]);
+	const [selectedPlace, setSelectedPlace] = useState(undefined);
 	const [errorMsg, setErrorMsg] = useState(null);
 
 	const circleRadius = 500;
+	const selectedMarker = selectedPlace ? 
+		<Marker coordinate = { selectedPlace.coordinate } pinColor = "#3F51B5"/>
+		: undefined;
 	const markers = markersData
 		.map((place, index) => <Marker key = {index} coordinate = { place.coordinate } />);
-	
+
 	useEffect(() => {
 		(async () => {
 			let { status } = await Location.requestPermissionsAsync();
@@ -138,11 +142,13 @@ const MapTab = props => {
 					strokeColor = "#CDDC39"
 				/>}
 				{ markers }
+				{ selectedMarker }
 			</MapView>
 
 			<RecyclerMapSearch 
 				onSelectOption = { place => {
-					updateRegion(place.coordinate)
+					setSelectedPlace(place);
+					updateRegion(place.coordinate);
 				} }
 				options = { dummyData }/>
 			
