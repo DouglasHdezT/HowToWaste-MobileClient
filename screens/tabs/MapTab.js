@@ -4,7 +4,6 @@ import { View, Text, StyleSheet,Dimensions } from 'react-native'
 import MapView, { Circle, Marker } from "react-native-maps";
 import * as Location from 'expo-location';
 
-import Search from "../forms/Search";
 import MapLayout from '../../components/frontLayouts/MapLayout';
 
 import { getDistance, isPointWithinRadius } from 'geolib';
