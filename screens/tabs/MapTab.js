@@ -5,10 +5,10 @@ import MapView, { Circle, Marker } from "react-native-maps";
 import * as Location from 'expo-location';
 
 import MapLayout from '../../components/frontLayouts/MapLayout';
+import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
 
 import { getDistance, isPointWithinRadius } from 'geolib';
 import LatLng from '../../classes/LatLng';
-import RecyclerMapSearch from '../../components/forms/RecyclerMapSearch';
 
 const dummyData = [
 	{
@@ -60,15 +60,19 @@ const dummyData = [
 const MapTab = props => {
 	const [region, setRegion] = useState(null);
 	const [position, setPosition] = useState(null);
+	const [circleRadius, setCircleRadius] = useState(500);
+
 	const [markersData, setMarkersData] = useState([]);
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
+	
 	const [errorMsg, setErrorMsg] = useState(null);
 
-	const circleRadius = 500;
 	const selectedMarker = selectedPlace ? 
 		<Marker coordinate = { selectedPlace.coordinate } pinColor = "#3F51B5"/>
 		: undefined;
-	const markers = markersData
+
+	const markers = !position ? [] : 
+		markersData
 		.map((place, index) => <Marker key = {index} coordinate = { place.coordinate } />);
 
 	useEffect(() => {
@@ -93,7 +97,6 @@ const MapTab = props => {
 			};
 
 			setPosition(newPosition)
-
 			setMarkersData(updateMarkers(newPosition));
 		})();
 	},[]);
@@ -106,9 +109,9 @@ const MapTab = props => {
 		});
 	};
 
-	const updateMarkers = (newPosition) => {
+	const updateMarkers = (newPosition, newRadius = undefined) => {
 		return dummyData
-			.filter(place => isPointWithinRadius(place.coordinate, newPosition, circleRadius));
+			.filter(place => isPointWithinRadius(place.coordinate, newPosition, newRadius ? newRadius : circleRadius));
 	}
 	return (
 		<View style={styles.container}>
@@ -143,15 +146,26 @@ const MapTab = props => {
 				{ markers }
 				{ selectedMarker }
 			</MapView>
+			
+			{markersData.length > 0 && <MapLayout
+				onSelectOption = { place => {
+					setSelectedPlace(place);
+					updateRegion(place.coordinate);
+				} } 
+				carrouselData = { markersData }/>}
 
-			<RecyclerMapSearch 
+			<MapLayoutBar 
+				circleRadius = { circleRadius }
+				changeRadius = { value => {
+					setMarkersData(updateMarkers(position, value));
+					setCircleRadius(value);
+				} }
 				onSelectOption = { place => {
 					setSelectedPlace(place);
 					updateRegion(place.coordinate);
 				} }
 				options = { dummyData }/>
 			
-			{markersData.length > 0 && <MapLayout carrouselData = { markersData }/>}
 		</View>
 	);
 }

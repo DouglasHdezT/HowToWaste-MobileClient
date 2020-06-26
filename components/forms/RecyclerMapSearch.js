@@ -54,9 +54,6 @@ const filterData = (options, query) => {
 const styles = StyleSheet.create({
 	container: {
 		width: "100%",
-		position: "absolute",
-		top: Platform.select({ios: 60, android: 50}),
-		left: 0,
 	},
 	inputContainer: {
 		marginHorizontal: 12,

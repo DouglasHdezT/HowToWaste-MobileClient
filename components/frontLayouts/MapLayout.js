@@ -4,10 +4,12 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 
 import RecyclerPlacesCarousel from '../carousels/RecyclerPlacesCarousel';
 
-const MapLayout = ({ carrouselData }) => {
+const MapLayout = ({ carrouselData, onSelectOption }) => {
 	return(
 		<View style = { styles.container }>
-			<RecyclerPlacesCarousel data = { carrouselData }/>
+			<RecyclerPlacesCarousel 
+				onSelectOption = { onSelectOption }
+				data = { carrouselData }/>
 		</View>
 	);
 }
@@ -15,7 +17,7 @@ const MapLayout = ({ carrouselData }) => {
 const styles = StyleSheet.create({
 	container: {
 		width: "100%",
-		height: Dimensions.get("window").height/4,
+		height: Dimensions.get("window").height/5,
 
 		padding: 8,
 		
