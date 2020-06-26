@@ -95,11 +95,11 @@ const MapTab = props => {
 		})();
 	},[]);
 
-	const updateRegion = (lat, lng) => {
+	const updateRegion = ({latitude, longitude}) => {
 		setRegion({
 			...region,
-			latitude: lat,
-			longitude: lng,
+			latitude,
+			longitude,
 		});
 	};
 
@@ -140,7 +140,11 @@ const MapTab = props => {
 				{ markers }
 			</MapView>
 
-			<RecyclerMapSearch options = { dummyData }/>
+			<RecyclerMapSearch 
+				onSelectOption = { place => {
+					updateRegion(place.coordinate)
+				} }
+				options = { dummyData }/>
 			
 			{markersData.length > 0 && <MapLayout carrouselData = { markersData }/>}
 		</View>

@@ -12,21 +12,29 @@ const RecyclerMapSearch = ({ options = [], onSelectOption }) => {
 
 	return(
 		<AutocompleteInput
-			onChangeText = { text => setQuery(text) }
 			data = {filteredOptions}
 			keyExtractor = { item => item._id }
 			
 			containerStyle = { styles.container }
 			inputContainerStyle = { styles.inputContainer}
+			listContainerStyle = { styles.listContainer }
+			listStyle = { styles.list }
 			renderTextInput = {()=>(
-				<TextInput 
+				<TextInput
+					value = { query }
+					onChangeText = { text => setQuery(text) } 
 					placeholder = "Busca plantas recicladoras"
 					style = { styles.textInput } />
 			)}
 			renderItem = {({item}) => (
-				<TouchableOpacity>
-					<ModedText> { item.name } </ModedText>
-					<ModedText> { item.direction } </ModedText>
+				<TouchableOpacity
+					onPress = {() => {
+						setQuery("");
+						onSelectOption(item)
+					}}
+					style = { styles.itemText }>
+					<ModedText style = {{ fontSize: 16 }} title> { item.name } </ModedText>
+					<ModedText tab> { item.direction } </ModedText>
 				</TouchableOpacity>
 			)}
 		/>
@@ -40,7 +48,7 @@ const filterData = (options, query) => {
 
 	const regex = new RegExp(`${query.trim()}`, "i");
 
-	return options.filter(item => item.name.search(regex) >= 0);
+	return options.filter(item => item.name.search(regex) >= 0 || item.direction.search(regex) >= 0);
 }
 
 const styles = StyleSheet.create({
@@ -52,7 +60,7 @@ const styles = StyleSheet.create({
 	},
 	inputContainer: {
 		marginHorizontal: 12,
-		borderColor: "transparent"
+		borderWidth: 0,
 	},
 	textInput: {
 		backgroundColor: "#fff",
@@ -64,8 +72,17 @@ const styles = StyleSheet.create({
 		fontFamily: "roboto-light",
 		fontSize: 18,
 	},
+	listContainer:{
+		marginHorizontal: 16,
+		borderWidth: 0,
+	},
+	list: {
+		borderWidth: 0,
+		paddingVertical: 8,
+		paddingHorizontal: 16,
+	},
 	itemText: {
-
+		marginVertical: 4
 	}
 });
 
