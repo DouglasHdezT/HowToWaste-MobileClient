@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Dimensions } from 'react-native';
 
 import RecyclerPlacesCarousel from '../carousels/RecyclerPlacesCarousel';
 
@@ -45,7 +45,7 @@ const MapLayout = props => {
 const styles = StyleSheet.create({
 	container: {
 		width: "100%",
-		height: "25%",
+		height: Dimensions.get("window").height/4,
 
 		padding: 8,
 		

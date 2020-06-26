@@ -30,6 +30,7 @@ const Search = (props) => {
                     },
                     textInputContainer: {
                         marginHorizontal: 10,
+						paddingHorizontal: 10,
                         flex: 1,
                         backgroundColor: 'transparent',
                         height: 54,
