@@ -6,6 +6,7 @@ import RecyclerPlantCard from '../cards/RecyclerPlantCard';
 const RecyclerPlacesCarousel = ({data}) => {
 	const _renderItem = (item, index) => (
 		<RecyclerPlantCard
+			unique = {data.length === 1 ? true : false}
 			last = {index !== (data.length -1) ? false : true}
 			name = {item.name} 
 			direction = {item.direction}/>)
@@ -16,6 +17,7 @@ const RecyclerPlacesCarousel = ({data}) => {
 				horizontal
 				data = { data }
 				renderItem = { ({item, index}) => _renderItem(item, index) }
+				keyExtractor = { item => item._id }
 			/>
 		</View>	
 	);

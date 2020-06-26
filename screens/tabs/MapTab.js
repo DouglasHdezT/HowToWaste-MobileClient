@@ -9,24 +9,64 @@ import MapLayout from '../../components/frontLayouts/MapLayout';
 
 import { getDistance, isPointWithinRadius } from 'geolib';
 import LatLng from '../../classes/LatLng';
+import RecyclerMapSearch from '../../components/forms/RecyclerMapSearch';
 
-const dummyPoints = [
-	new LatLng(13.6834,-89.2342),
-	new LatLng(13.6837,-89.2330),
-	new LatLng(13.6862,-89.2376),
-	new LatLng(13.6869,-89.2310),
-	new LatLng(13.6860,-89.2315),
-	new LatLng(13.6809,-89.2260),
-	new LatLng(13.6810,-89.2375),
-] 
+const dummyData = [
+	{
+		_id: "1",
+		name: "Place 1",
+		direction: "Somewhere in the endless sky",
+		coordinate: new LatLng(13.6834,-89.2342), 
+	},
+
+	{
+		_id: "2",
+		name: "Some fantanstic place 2",
+		direction: "Here in your heart",
+		coordinate: new LatLng(13.6837,-89.2330), 
+	},
+
+	{
+		_id: "3",
+		name: "The real and only Recycler place",
+		direction: "Wherever you want",
+		coordinate: new LatLng(13.6862,-89.2376),
+	},
+	{
+		_id: "4",
+		name: "Recycler place",
+		direction: "Nowhere",
+		coordinate: new LatLng(13.6869,-89.2310),
+	},
+	{
+		_id: "5",
+		name: "Bottle",
+		direction: "Megaton",
+		coordinate: new LatLng(13.6860,-89.2315),
+	},
+	{
+		_id: "6",
+		name: "Melted Alum",
+		direction: "1rst street outside you",
+		coordinate: new LatLng(13.6809,-89.2260),
+	},
+	{
+		_id: "7",
+		name: "IDK place",
+		direction: "Please ask me",
+		coordinate: new LatLng(13.6810,-89.2375),
+	}
+]
 
 const MapTab = props => {
 	const [region, setRegion] = useState(null);
 	const [position, setPosition] = useState(null);
-	const [markers, setMarkers] = useState([]);
+	const [markersData, setMarkersData] = useState([]);
 	const [errorMsg, setErrorMsg] = useState(null);
 
 	const circleRadius = 500;
+	const markers = markersData
+		.map((place, index) => <Marker key = {index} coordinate = { place.coordinate } />);
 	
 	useEffect(() => {
 		(async () => {
@@ -51,7 +91,7 @@ const MapTab = props => {
 
 			setPosition(newPosition)
 
-			setMarkers(updateMarkers(newPosition));
+			setMarkersData(updateMarkers(newPosition));
 		})();
 	},[]);
 
@@ -64,9 +104,8 @@ const MapTab = props => {
 	};
 
 	const updateMarkers = (newPosition) => {
-		return dummyPoints
-			.filter(point => isPointWithinRadius(point, newPosition, circleRadius))
-			.map((point, index) => <Marker key = {index} coordinate = { point } />);
+		return dummyData
+			.filter(place => isPointWithinRadius(place.coordinate, newPosition, circleRadius));
 	}
 	return (
 		<View style={styles.container}>
@@ -85,7 +124,7 @@ const MapTab = props => {
 
 					if(delta > 5){
 						setPosition(newPosition);
-						setMarkers(updateMarkers(newPosition));
+						setMarkersData(updateMarkers(newPosition));
 					}
 				} }
 				onRegionChangeComplete = {region => setRegion(region)}
@@ -95,11 +134,15 @@ const MapTab = props => {
 					center = {position}
 					radius = {circleRadius}
 					fillColor = "#CDDC3966"
+					strokeWidth = { 1 }
+					strokeColor = "#CDDC39"
 				/>}
 				{ markers }
 			</MapView>
-			<Search onSelectLocation={updateRegion}/>
-			<MapLayout/>
+
+			<RecyclerMapSearch options = { dummyData }/>
+			
+			{markersData.length > 0 && <MapLayout carrouselData = { markersData }/>}
 		</View>
 	);
 }

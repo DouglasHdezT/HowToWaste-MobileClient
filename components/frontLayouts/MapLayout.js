@@ -4,40 +4,10 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 
 import RecyclerPlacesCarousel from '../carousels/RecyclerPlacesCarousel';
 
-const dummyData = [
-	{
-		id: "1",
-		name: "Place 1",
-		direction: "Somewhere in the endless sky",
-	},
-
-	{
-		id: "2",
-		name: "Some fantanstic place 2",
-		direction: "Here in your heart",
-	},
-
-	{
-		id: "3",
-		name: "The real and only Recycler place",
-		direction: "Wherever you want",
-	},
-	{
-		id: "4",
-		name: "Recycler place",
-		direction: "Nowhere",
-	},
-	{
-		id: "5",
-		name: "Bottle",
-		direction: "Megaton",
-	}
-]
-
-const MapLayout = props => {
+const MapLayout = ({ carrouselData }) => {
 	return(
 		<View style = { styles.container }>
-			<RecyclerPlacesCarousel data = { dummyData }/>
+			<RecyclerPlacesCarousel data = { carrouselData }/>
 		</View>
 	);
 }
