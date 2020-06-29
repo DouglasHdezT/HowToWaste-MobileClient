@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
 		height:"110%"
 	},
 	selectedMarker:{
-		backgroundColor: "red",
+		backgroundColor: "#3F51B5",
 		width:45,
 		height:45,
 		display:"flex",
