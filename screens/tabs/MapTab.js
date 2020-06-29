@@ -1,28 +1,27 @@
 import React,{useEffect,useState} from 'react';
-
 import { View, Text, StyleSheet,Dimensions } from 'react-native'
 import MapView, { Circle, Marker } from "react-native-maps";
 import * as Location from 'expo-location';
-
 import MapLayout from '../../components/frontLayouts/MapLayout';
 import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
-
+import { FontAwesome5 } from '@expo/vector-icons';
 import { getDistance, isPointWithinRadius } from 'geolib';
 import LatLng from '../../classes/LatLng';
+import Colors from "../../constants/Colors";
 
 const dummyData = [
 	{
 		_id: "1",
 		name: "Place 1",
 		direction: "Somewhere in the endless sky",
-		coordinate: new LatLng(13.6834,-89.2342), 
+		coordinate: new LatLng(13.6834,-89.2342),
 	},
 
 	{
 		_id: "2",
 		name: "Some fantanstic place 2",
 		direction: "Here in your heart",
-		coordinate: new LatLng(13.6837,-89.2330), 
+		coordinate: new LatLng(13.6837,-89.2330),
 	},
 
 	{
@@ -64,16 +63,26 @@ const MapTab = props => {
 
 	const [markersData, setMarkersData] = useState([]);
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
-	
+
 	const [errorMsg, setErrorMsg] = useState(null);
 
-	const selectedMarker = selectedPlace ? 
-		<Marker coordinate = { selectedPlace.coordinate } style = {{zIndex:1}} pinColor = "#3F51B5"/>
+	const selectedMarker = selectedPlace ?
+		<Marker coordinate = { selectedPlace.coordinate } style = {{zIndex:1}} >
+			<View style={styles.selectedMarker}>
+				<FontAwesome5 name="recycle" size={20} color={"white"} />
+			</View>
+		</Marker>
 		: undefined;
 
-	const markers = !position ? [] : 
+	const markers = !position ? [] :
 		markersData
-		.map((place, index) => <Marker  key = {index} coordinate = { place.coordinate }/>);
+		.map((place, index) => (
+			<Marker  key = {index} coordinate = { place.coordinate }>
+				<View style={styles.marker}>
+					<FontAwesome5 name="recycle" size={20} color={"white"} />
+				</View>
+			</Marker>
+			));
 
 	useEffect(() => {
 		(async () => {
@@ -83,14 +92,14 @@ const MapTab = props => {
 			}
 
 			let location = await Location.getCurrentPositionAsync({});
-			
+
 			setRegion({
 				latitude: location.coords.latitude,
 				longitude: location.coords.longitude,
 				latitudeDelta:  0.005,
 				longitudeDelta: 0.005,
 			});
-			
+
 			const newPosition = {
 				latitude: location.coords.latitude,
 				longitude: location.coords.longitude,
@@ -135,8 +144,8 @@ const MapTab = props => {
 				} }
 				onRegionChangeComplete = {region => setRegion(region)}
 				style={styles.mapStyle}>
-				
-				{position && <Circle 
+
+				{position && <Circle
 					center = {position}
 					radius = {circleRadius}
 					fillColor = "#CDDC3966"
@@ -150,10 +159,10 @@ const MapTab = props => {
 				onSelectOption = { place => {
 					setSelectedPlace(place);
 					updateRegion(place.coordinate);
-				} } 
+				} }
 				carrouselData = { markersData }/>}
 
-			<MapLayoutBar 
+			<MapLayoutBar
 				circleRadius = { circleRadius }
 				changeRadius = { value => {
 					setMarkersData(updateMarkers(position, value));
@@ -179,6 +188,27 @@ const styles = StyleSheet.create({
 		width:"100%",
 		height:"110%"
 	},
+	selectedMarker:{
+		backgroundColor: "red",
+		width:45,
+		height:45,
+		display:"flex",
+		justifyContent: "center",
+		alignItems: "center",
+		borderRadius:45/2,
+		elevation:8
+	},
+	marker:{
+		backgroundColor: "rgb(106,176,76)",
+		width:40,
+		height:40,
+		display:"flex",
+		justifyContent: "center",
+		alignItems: "center",
+		borderRadius:40/2,
+		elevation:4
+	},
+
 });
 
 export default MapTab;
