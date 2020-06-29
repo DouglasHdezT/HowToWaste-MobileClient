@@ -9,6 +9,7 @@ const ModedText = props => {
 	const color = props.white ? "white" : "black";
 	const textAlign = props.center ? "center" : "left";
 	const textAlignVertical = props.centerV ? "center" : "top";
+	const marginLeft = props.tab ? 16 : 0;
 
 	return(
 		<Text style = {{
@@ -17,6 +18,7 @@ const ModedText = props => {
 			color,
 			textAlign,
 			textAlignVertical,
+			marginLeft,
 			...style,
 		}}>
 			{ props.children }

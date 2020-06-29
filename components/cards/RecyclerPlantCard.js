@@ -8,9 +8,9 @@ import BaseStyles from '../../constants/BaseStyles';
 
 import ModedText from '../text/ModedText';
 
-const RecyclerPlantCard = ({name, direction, onPressText, onPressMarker, last}) => {
+const RecyclerPlantCard = ({name, direction, onPressText, onPressMarker, last, unique}) => {
 	return(
-		<View style = {{ ...styles.container, marginRight: last ? 0 :  8}}>
+		<View style = {{ ...styles.container, marginRight: last ? 0 :  8, width: unique ? "100%" : "auto"}}>
 			<TouchableOpacity style = {{flex: 1, width: "100%"}} onPress = { onPressText }>
 				<ModedText 
 					style = { {...styles.textBox, fontSize: 20} } white title> 
@@ -32,7 +32,7 @@ const RecyclerPlantCard = ({name, direction, onPressText, onPressMarker, last}) 
 
 const styles = StyleSheet.create({
 	container: {
-		minWidth: Dimensions.get("window").width / 2,
+		minWidth: Dimensions.get("window").width * 2 / 3,
 		padding: 16,
 		backgroundColor: Colors.cardBackgroud,
 
