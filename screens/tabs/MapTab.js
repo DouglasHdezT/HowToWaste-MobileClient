@@ -146,7 +146,6 @@ const MapTab = props => {
 				{ markers }
 				{ selectedMarker }
 			</MapView>
-			
 			{markersData.length > 0 && <MapLayout
 				onSelectOption = { place => {
 					setSelectedPlace(place);
@@ -165,7 +164,6 @@ const MapTab = props => {
 					updateRegion(place.coordinate);
 				} }
 				options = { dummyData }/>
-			
 		</View>
 	);
 }
