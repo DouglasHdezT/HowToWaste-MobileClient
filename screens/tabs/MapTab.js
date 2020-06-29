@@ -68,12 +68,12 @@ const MapTab = props => {
 	const [errorMsg, setErrorMsg] = useState(null);
 
 	const selectedMarker = selectedPlace ? 
-		<Marker coordinate = { selectedPlace.coordinate } pinColor = "#3F51B5"/>
+		<Marker coordinate = { selectedPlace.coordinate } style = {{zIndex:1}} pinColor = "#3F51B5"/>
 		: undefined;
 
 	const markers = !position ? [] : 
 		markersData
-		.map((place, index) => <Marker key = {index} coordinate = { place.coordinate } />);
+		.map((place, index) => <Marker  key = {index} coordinate = { place.coordinate }/>);
 
 	useEffect(() => {
 		(async () => {
