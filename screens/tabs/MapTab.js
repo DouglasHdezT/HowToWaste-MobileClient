@@ -7,7 +7,6 @@ import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getDistance, isPointWithinRadius } from 'geolib';
 import LatLng from '../../classes/LatLng';
-import Colors from "../../constants/Colors";
 
 const dummyData = [
 	{
