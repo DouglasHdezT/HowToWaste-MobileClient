@@ -1,12 +1,17 @@
 import React,{useEffect,useState} from 'react';
-import { View, Text, StyleSheet,Dimensions } from 'react-native'
+
+import { View, StyleSheet } from 'react-native'
 import MapView, { Circle, Marker } from "react-native-maps";
+
 import * as Location from 'expo-location';
-import MapLayout from '../../components/frontLayouts/MapLayout';
-import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { getDistance, isPointWithinRadius } from 'geolib';
+
+import MapLayout from '../../components/frontLayouts/MapLayout';
+import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
 import LatLng from '../../classes/LatLng';
+
+import { BASE, GET_DIRECTIONS } from '../../constants/ApiRoutes';
 
 const dummyData = [
 	{
@@ -56,14 +61,16 @@ const dummyData = [
 ]
 
 const MapTab = props => {
-	const [region, setRegion] = useState(null);
-	const [position, setPosition] = useState(null);
+	const [region, setRegion] = useState(undefined);
+	const [position, setPosition] = useState(undefined);
 	const [circleRadius, setCircleRadius] = useState(500);
+
+	const [directionsData, setDirectionData] = useState([]);
 
 	const [markersData, setMarkersData] = useState([]);
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
 
-	const [errorMsg, setErrorMsg] = useState(null);
+	const [errorMsg, setErrorMsg] = useState(undefined);
 
 	const selectedMarker = selectedPlace ?
 		<Marker coordinate = { selectedPlace.coordinate } style = {{zIndex:1}} >
@@ -109,6 +116,22 @@ const MapTab = props => {
 		})();
 	},[]);
 
+	useEffect(() => {
+		fetchDirections();
+	}, []);
+
+	const fetchDirections = async () => {
+		try{
+			const response = await fetch(`${BASE}${GET_DIRECTIONS}`);
+			
+			if(response.ok){
+				const data = await response.json();
+			}
+		}catch(e){
+			console.log(e);
+		}
+	}	
+
 	const updateRegion = ({latitude, longitude}) => {
 		setRegion({
 			...region,
@@ -151,9 +174,11 @@ const MapTab = props => {
 					strokeWidth = { 1 }
 					strokeColor = "#CDDC39"
 				/>}
+
 				{ markers }
 				{ selectedMarker }
 			</MapView>
+
 			{markersData.length > 0 && <MapLayout
 				onSelectOption = { place => {
 					setSelectedPlace(place);
@@ -209,5 +234,26 @@ const styles = StyleSheet.create({
 	},
 
 });
+
+const lineupDirections = (data) => {
+	if(!data || data.length < 1) return [];
+
+	let linedupData = [];
+
+	data.forEach(rp => {
+		const directionsBuff = rp.directions.map(direction => {
+			return {
+				_id: rp._id,
+				name: rp.name,
+				direction: direction.desc,
+				coordinate: new LatLng(direction.latitude, direction.longitude)
+			}
+		});
+
+		linedupData = [...linedupData, ...directionsBuff];
+	});
+
+	return linedupData;
+}
 
 export default MapTab;
