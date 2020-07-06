@@ -18,7 +18,7 @@ const RecyclerPlacesCarousel = ({data, onSelectOption}) => {
 				horizontal
 				data = { data }
 				renderItem = { ({item, index}) => _renderItem(item, index) }
-				keyExtractor = { item => item._id }
+				keyExtractor = { (item, index) => `${item._id}.${index}` }
 			/>
 		</View>	
 	);

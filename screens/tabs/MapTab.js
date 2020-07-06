@@ -1,72 +1,39 @@
 import React,{useEffect,useState} from 'react';
-import { View, Text, StyleSheet,Dimensions } from 'react-native'
-import MapView, { Circle, Marker } from "react-native-maps";
+
+import { View, StyleSheet, Dimensions } from 'react-native'
+import MapView, { Circle, Marker,} from "react-native-maps";
+
 import * as Location from 'expo-location';
+import { FontAwesome5 } from '@expo/vector-icons';
+
 import MapLayout from '../../components/frontLayouts/MapLayout';
 import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { getDistance, isPointWithinRadius } from 'geolib';
+
 import LatLng from '../../classes/LatLng';
+import { getDistance, isPointWithinRadius } from 'geolib';
 
-const dummyData = [
-	{
-		_id: "1",
-		name: "Place 1",
-		direction: "Somewhere in the endless sky",
-		coordinate: new LatLng(13.6834,-89.2342),
-	},
+import { BASE, GET_DIRECTIONS } from '../../constants/ApiRoutes';
 
-	{
-		_id: "2",
-		name: "Some fantanstic place 2",
-		direction: "Here in your heart",
-		coordinate: new LatLng(13.6837,-89.2330),
-	},
-
-	{
-		_id: "3",
-		name: "The real and only Recycler place",
-		direction: "Wherever you want",
-		coordinate: new LatLng(13.6862,-89.2376),
-	},
-	{
-		_id: "4",
-		name: "Recycler place",
-		direction: "Nowhere",
-		coordinate: new LatLng(13.6869,-89.2310),
-	},
-	{
-		_id: "5",
-		name: "Bottle",
-		direction: "Megaton",
-		coordinate: new LatLng(13.6860,-89.2315),
-	},
-	{
-		_id: "6",
-		name: "Melted Alum",
-		direction: "1rst street outside you",
-		coordinate: new LatLng(13.6809,-89.2260),
-	},
-	{
-		_id: "7",
-		name: "IDK place",
-		direction: "Please ask me",
-		coordinate: new LatLng(13.6810,-89.2375),
-	}
-]
-
-const MapTab = props => {
-	const [region, setRegion] = useState(null);
-	const [position, setPosition] = useState(null);
+const MapTab = ({ navigation }) => {
+	const [region, setRegion] = useState(undefined);
+	const [position, setPosition] = useState(undefined);
 	const [circleRadius, setCircleRadius] = useState(500);
 
-	const [markersData, setMarkersData] = useState([]);
+	const [directionsData, setDirectionData] = useState([]);
+
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
 
-	const [errorMsg, setErrorMsg] = useState(null);
+	const [errorMsg, setErrorMsg] = useState(undefined);
+
+
+	let selectedMarkerRef = undefined;
+
+	const filteredData = position ? directionsData
+		.filter(place => isPointWithinRadius(place.coordinate, position, circleRadius)) : [];
 
 	const selectedMarker = selectedPlace ?
-		<Marker coordinate = { selectedPlace.coordinate } style = {{zIndex:1}} >
+		<Marker coordinate={selectedPlace.coordinate} style={{ zIndex: 1 }}
+			ref={ref => { selectedMarkerRef = ref }}>
 			<View style={styles.selectedMarker}>
 				<FontAwesome5 name="recycle" size={20} color={"white"} />
 			</View>
@@ -74,15 +41,19 @@ const MapTab = props => {
 		: undefined;
 
 	const markers = !position ? [] :
-		markersData
+		filteredData
 		.map((place, index) => (
-			<Marker  key = {index} coordinate = { place.coordinate }>
+			<Marker key={index}
+				coordinate={place.coordinate}
+				onPress={e => { updateSelectedPlace(place)	}}>
 				<View style={styles.marker}>
 					<FontAwesome5 name="recycle" size={20} color={"white"} />
 				</View>
 			</Marker>
 			));
 
+	
+	
 	useEffect(() => {
 		(async () => {
 			let { status } = await Location.requestPermissionsAsync();
@@ -105,9 +76,30 @@ const MapTab = props => {
 			};
 
 			setPosition(newPosition)
-			setMarkersData(updateMarkers(newPosition));
+			fetchDirections();
 		})();
 	},[]);
+
+	const updateSelectedPlace = place => {
+		setSelectedPlace(place);
+		
+		if (selectedMarkerRef !== undefined) { 
+			selectedMarkerRef.hideCallout();
+		}
+	}
+	
+	const fetchDirections = async () => {
+		try{
+			const response = await fetch(`${BASE}${GET_DIRECTIONS}`);
+			
+			if(response.ok){
+				const data = await response.json();
+				setDirectionData(lineupDirections(data.places));
+			}
+		}catch(e){
+			console.log(e);
+		}
+	}	
 
 	const updateRegion = ({latitude, longitude}) => {
 		setRegion({
@@ -117,10 +109,8 @@ const MapTab = props => {
 		});
 	};
 
-	const updateMarkers = (newPosition, newRadius = undefined) => {
-		return dummyData
-			.filter(place => isPointWithinRadius(place.coordinate, newPosition, newRadius ? newRadius : circleRadius));
-	}
+
+
 	return (
 		<View style={styles.container}>
 			<MapView
@@ -138,7 +128,6 @@ const MapTab = props => {
 
 					if(delta > 5){
 						setPosition(newPosition);
-						setMarkersData(updateMarkers(newPosition));
 					}
 				} }
 				onRegionChangeComplete = {region => setRegion(region)}
@@ -151,27 +140,31 @@ const MapTab = props => {
 					strokeWidth = { 1 }
 					strokeColor = "#CDDC39"
 				/>}
+
 				{ markers }
 				{ selectedMarker }
 			</MapView>
-			{markersData.length > 0 && <MapLayout
+
+			{filteredData.length > 0 && <MapLayout
 				onSelectOption = { place => {
-					setSelectedPlace(place);
+					updateSelectedPlace(place);
 					updateRegion(place.coordinate);
-				} }
-				carrouselData = { markersData }/>}
+				}}
+				carrouselData = { filteredData }/>}
 
 			<MapLayoutBar
 				circleRadius = { circleRadius }
 				changeRadius = { value => {
-					setMarkersData(updateMarkers(position, value));
 					setCircleRadius(value);
+				}}
+				onPressLocation={() => { 
+					setRegion({...position, latitudeDelta: 0.01, longitudeDelta: 0.01});
 				} }
 				onSelectOption = { place => {
-					setSelectedPlace(place);
+					updateSelectedPlace(place);
 					updateRegion(place.coordinate);
 				} }
-				options = { dummyData }/>
+				options = { directionsData }/>
 		</View>
 	);
 }
@@ -207,7 +200,35 @@ const styles = StyleSheet.create({
 		borderRadius:40/2,
 		elevation:4
 	},
+	labelMarker: {
+		padding: 16,
+		width: Dimensions.get("window").width/2,
 
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+	}
 });
+
+const lineupDirections = (data) => {
+	if(!data || data.length < 1) return [];
+
+	let linedupData = [];
+
+	data.forEach(rp => {
+		const directionsBuff = rp.directions.map(direction => {
+			return {
+				_id: rp._id,
+				name: rp.name,
+				direction: direction.desc,
+				coordinate: new LatLng(direction.latitude, direction.longitude)
+			}
+		});
+
+		linedupData = [...linedupData, ...directionsBuff];
+	});
+
+	return linedupData;
+}
 
 export default MapTab;
