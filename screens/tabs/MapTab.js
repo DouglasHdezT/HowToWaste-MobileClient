@@ -13,53 +13,6 @@ import LatLng from '../../classes/LatLng';
 
 import { BASE, GET_DIRECTIONS } from '../../constants/ApiRoutes';
 
-const dummyData = [
-	{
-		_id: "1",
-		name: "Place 1",
-		direction: "Somewhere in the endless sky",
-		coordinate: new LatLng(13.6834,-89.2342),
-	},
-
-	{
-		_id: "2",
-		name: "Some fantanstic place 2",
-		direction: "Here in your heart",
-		coordinate: new LatLng(13.6837,-89.2330),
-	},
-
-	{
-		_id: "3",
-		name: "The real and only Recycler place",
-		direction: "Wherever you want",
-		coordinate: new LatLng(13.6862,-89.2376),
-	},
-	{
-		_id: "4",
-		name: "Recycler place",
-		direction: "Nowhere",
-		coordinate: new LatLng(13.6869,-89.2310),
-	},
-	{
-		_id: "5",
-		name: "Bottle",
-		direction: "Megaton",
-		coordinate: new LatLng(13.6860,-89.2315),
-	},
-	{
-		_id: "6",
-		name: "Melted Alum",
-		direction: "1rst street outside you",
-		coordinate: new LatLng(13.6809,-89.2260),
-	},
-	{
-		_id: "7",
-		name: "IDK place",
-		direction: "Please ask me",
-		coordinate: new LatLng(13.6810,-89.2375),
-	}
-]
-
 const MapTab = props => {
 	const [region, setRegion] = useState(undefined);
 	const [position, setPosition] = useState(undefined);
@@ -67,10 +20,13 @@ const MapTab = props => {
 
 	const [directionsData, setDirectionData] = useState([]);
 
-	const [markersData, setMarkersData] = useState([]);
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
 
 	const [errorMsg, setErrorMsg] = useState(undefined);
+
+
+	const filteredData = directionsData
+		.filter(place => isPointWithinRadius(place.coordinate, position, circleRadius));
 
 	const selectedMarker = selectedPlace ?
 		<Marker coordinate = { selectedPlace.coordinate } style = {{zIndex:1}} >
@@ -81,7 +37,7 @@ const MapTab = props => {
 		: undefined;
 
 	const markers = !position ? [] :
-		markersData
+		filteredData
 		.map((place, index) => (
 			<Marker  key = {index} coordinate = { place.coordinate }>
 				<View style={styles.marker}>
@@ -89,6 +45,8 @@ const MapTab = props => {
 				</View>
 			</Marker>
 			));
+
+
 
 	useEffect(() => {
 		(async () => {
@@ -112,7 +70,6 @@ const MapTab = props => {
 			};
 
 			setPosition(newPosition)
-			setMarkersData(updateMarkers(newPosition));
 		})();
 	},[]);
 
@@ -126,11 +83,14 @@ const MapTab = props => {
 			
 			if(response.ok){
 				const data = await response.json();
+				setDirectionData(lineupDirections(data.places));
 			}
 		}catch(e){
 			console.log(e);
 		}
 	}	
+
+
 
 	const updateRegion = ({latitude, longitude}) => {
 		setRegion({
@@ -140,10 +100,8 @@ const MapTab = props => {
 		});
 	};
 
-	const updateMarkers = (newPosition, newRadius = undefined) => {
-		return dummyData
-			.filter(place => isPointWithinRadius(place.coordinate, newPosition, newRadius ? newRadius : circleRadius));
-	}
+
+
 	return (
 		<View style={styles.container}>
 			<MapView
@@ -161,7 +119,6 @@ const MapTab = props => {
 
 					if(delta > 5){
 						setPosition(newPosition);
-						setMarkersData(updateMarkers(newPosition));
 					}
 				} }
 				onRegionChangeComplete = {region => setRegion(region)}
@@ -179,24 +136,23 @@ const MapTab = props => {
 				{ selectedMarker }
 			</MapView>
 
-			{markersData.length > 0 && <MapLayout
+			{filteredData.length > 0 && <MapLayout
 				onSelectOption = { place => {
 					setSelectedPlace(place);
 					updateRegion(place.coordinate);
 				} }
-				carrouselData = { markersData }/>}
+				carrouselData = { filteredData }/>}
 
 			<MapLayoutBar
 				circleRadius = { circleRadius }
 				changeRadius = { value => {
-					setMarkersData(updateMarkers(position, value));
 					setCircleRadius(value);
 				} }
 				onSelectOption = { place => {
 					setSelectedPlace(place);
 					updateRegion(place.coordinate);
 				} }
-				options = { dummyData }/>
+				options = { directionsData }/>
 		</View>
 	);
 }

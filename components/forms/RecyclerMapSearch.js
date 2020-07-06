@@ -13,7 +13,7 @@ const RecyclerMapSearch = ({ options = [], onSelectOption }) => {
 	return(
 		<AutocompleteInput
 			data = {filteredOptions}
-			keyExtractor = { item => item._id }
+			keyExtractor = { (item, index) => `${item._id}.${index}` }
 			
 			containerStyle = { styles.container }
 			inputContainerStyle = { styles.inputContainer}
