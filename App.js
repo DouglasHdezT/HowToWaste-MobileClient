@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
-import MainScreen from './screens/mainScreens/MainScreen';
+import MainNavStack from './screens/stacks/MainNavStack';
 
 export default function App() {
 	const [dataLoaded, setDataLoaded] = useState(false);
 
 	const splashScreen = <AppLoading startAsync = { loadData } onFinish = { () => setDataLoaded(true) }/>
-	const mainScreen = <MainScreen/>
+	const mainScreen = <MainNavStack/>
 
 	return dataLoaded ? mainScreen : splashScreen;
 }

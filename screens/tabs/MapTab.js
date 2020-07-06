@@ -1,22 +1,20 @@
 import React,{useEffect,useState} from 'react';
 
-import { View, StyleSheet, TouchableOpacity } from 'react-native'
-import MapView, { Circle, Marker } from "react-native-maps";
+import { View, StyleSheet, Dimensions } from 'react-native'
+import MapView, { Circle, Marker,} from "react-native-maps";
 
 import * as Location from 'expo-location';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
 
 import MapLayout from '../../components/frontLayouts/MapLayout';
 import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
-import ModedText from '../../components/text/ModedText';
 
 import LatLng from '../../classes/LatLng';
 import { getDistance, isPointWithinRadius } from 'geolib';
 
 import { BASE, GET_DIRECTIONS } from '../../constants/ApiRoutes';
 
-const MapTab = props => {
+const MapTab = ({ navigation }) => {
 	const [region, setRegion] = useState(undefined);
 	const [position, setPosition] = useState(undefined);
 	const [circleRadius, setCircleRadius] = useState(500);
@@ -28,20 +26,16 @@ const MapTab = props => {
 	const [errorMsg, setErrorMsg] = useState(undefined);
 
 
+	let selectedMarkerRef = undefined;
+
 	const filteredData = position ? directionsData
 		.filter(place => isPointWithinRadius(place.coordinate, position, circleRadius)) : [];
 
 	const selectedMarker = selectedPlace ?
-		<Marker coordinate={selectedPlace.coordinate} style={{ zIndex: 1 }}>
-			<View style={{ alignItems: "center" }}>
-				<TouchableOpacity style={styles.labelMarker}>
-					<ModedText style={{marginEnd: 8}} > {selectedPlace.name} </ModedText>
-					<AntDesign name="rightcircleo" size={24} color="black" />
-				</TouchableOpacity>
-
-				<View style={styles.selectedMarker}>
-					<FontAwesome5 name="recycle" size={20} color={"white"} />
-				</View>
+		<Marker coordinate={selectedPlace.coordinate} style={{ zIndex: 1 }}
+			ref={ref => { selectedMarkerRef = ref }}>
+			<View style={styles.selectedMarker}>
+				<FontAwesome5 name="recycle" size={20} color={"white"} />
 			</View>
 		</Marker>
 		: undefined;
@@ -51,15 +45,15 @@ const MapTab = props => {
 		.map((place, index) => (
 			<Marker key={index}
 				coordinate={place.coordinate}
-				onPress={e => { setSelectedPlace(place)	}}>
+				onPress={e => { updateSelectedPlace(place)	}}>
 				<View style={styles.marker}>
 					<FontAwesome5 name="recycle" size={20} color={"white"} />
 				</View>
 			</Marker>
 			));
 
-
-
+	
+	
 	useEffect(() => {
 		(async () => {
 			let { status } = await Location.requestPermissionsAsync();
@@ -86,6 +80,14 @@ const MapTab = props => {
 		})();
 	},[]);
 
+	const updateSelectedPlace = place => {
+		setSelectedPlace(place);
+		
+		if (selectedMarkerRef !== undefined) { 
+			selectedMarkerRef.hideCallout();
+		}
+	}
+	
 	const fetchDirections = async () => {
 		try{
 			const response = await fetch(`${BASE}${GET_DIRECTIONS}`);
@@ -98,8 +100,6 @@ const MapTab = props => {
 			console.log(e);
 		}
 	}	
-
-
 
 	const updateRegion = ({latitude, longitude}) => {
 		setRegion({
@@ -147,7 +147,7 @@ const MapTab = props => {
 
 			{filteredData.length > 0 && <MapLayout
 				onSelectOption = { place => {
-					setSelectedPlace(place);
+					updateSelectedPlace(place);
 					updateRegion(place.coordinate);
 				}}
 				carrouselData = { filteredData }/>}
@@ -161,7 +161,7 @@ const MapTab = props => {
 					setRegion({...position, latitudeDelta: 0.01, longitudeDelta: 0.01});
 				} }
 				onSelectOption = { place => {
-					setSelectedPlace(place);
+					updateSelectedPlace(place);
 					updateRegion(place.coordinate);
 				} }
 				options = { directionsData }/>
@@ -202,25 +202,11 @@ const styles = StyleSheet.create({
 	},
 	labelMarker: {
 		padding: 16,
-		marginBottom: 8,
+		width: Dimensions.get("window").width/2,
 
 		flexDirection: "row",
 		justifyContent: "space-between",
 		alignItems: "center",
-		
-		backgroundColor: "white",
-		borderTopStartRadius: 15,
-		borderBottomEndRadius: 15,
-
-		shadowColor: "#000",
-		shadowOffset: {
-			width: 0,
-			height: 5,
-		},
-		shadowOpacity: 0.34,
-		shadowRadius: 6.27,
-
-		elevation: 10,
 	}
 });
 
