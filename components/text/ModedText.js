@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 
 const ModedText = props => {
 	const style = props.style ? props.style : {};
-	const fontSize = props.title ? 24 : 16;
+	const fontSize = props.title ? 16 : 16;
 	const fontFamily = props.title ? "monserrat-bold" : "roboto-light";
 	const color = props.white ? "white" : "black";
 	const textAlign = props.center ? "center" : "left";

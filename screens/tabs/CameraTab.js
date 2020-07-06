@@ -12,7 +12,7 @@ const CameraTab = (props) => {
 	const [type, setType] = useState(Camera.Constants.Type.back);
 	const [{width, height}, setDimensions] = useState({width: 0, height: 0});
 	const isFocused = useIsFocused();
-
+	const [cameraRef,setCameraRef ] = useState(null)
 	useEffect(() => {
 		(async () => {
 			const { status } = await Camera.requestPermissionsAsync();
@@ -31,15 +31,16 @@ const CameraTab = (props) => {
 			onLayout = { (event) => {
 				const { width, height } = event.nativeEvent.layout;
 				setDimensions({width, height});
-			} } 
+			} }
 			style={ styles.container }>
-			
-			{isFocused && <Camera style={{ height: height, width: (3 * height) / 4}} type={type}/>}
 
-			<CameraLayout 
+			{isFocused && <Camera style={{ height: height, width: (3 * height) / 4}} type={type} ref={ref=>setCameraRef(ref)} />}
+
+			<CameraLayout
+				camera={cameraRef}
 				flipCameraAction = {()=>{
-					setType(type === Camera.Constants.Type.back ? 
-						Camera.Constants.Type.front : 
+					setType(type === Camera.Constants.Type.back ?
+						Camera.Constants.Type.front :
 						Camera.Constants.Type.back);
 				}}/>
 		</View>
