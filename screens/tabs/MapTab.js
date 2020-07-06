@@ -1,15 +1,18 @@
 import React,{useEffect,useState} from 'react';
 
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, TouchableOpacity } from 'react-native'
 import MapView, { Circle, Marker } from "react-native-maps";
 
 import * as Location from 'expo-location';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { getDistance, isPointWithinRadius } from 'geolib';
+import { AntDesign } from '@expo/vector-icons';
 
 import MapLayout from '../../components/frontLayouts/MapLayout';
 import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
+import ModedText from '../../components/text/ModedText';
+
 import LatLng from '../../classes/LatLng';
+import { getDistance, isPointWithinRadius } from 'geolib';
 
 import { BASE, GET_DIRECTIONS } from '../../constants/ApiRoutes';
 
@@ -25,13 +28,20 @@ const MapTab = props => {
 	const [errorMsg, setErrorMsg] = useState(undefined);
 
 
-	const filteredData = directionsData
-		.filter(place => isPointWithinRadius(place.coordinate, position, circleRadius));
+	const filteredData = position ? directionsData
+		.filter(place => isPointWithinRadius(place.coordinate, position, circleRadius)) : [];
 
 	const selectedMarker = selectedPlace ?
-		<Marker coordinate = { selectedPlace.coordinate } style = {{zIndex:1}} >
-			<View style={styles.selectedMarker}>
-				<FontAwesome5 name="recycle" size={20} color={"white"} />
+		<Marker coordinate={selectedPlace.coordinate} style={{ zIndex: 1 }}>
+			<View style={{ alignItems: "center" }}>
+				<TouchableOpacity style={styles.labelMarker}>
+					<ModedText style={{marginEnd: 8}} > {selectedPlace.name} </ModedText>
+					<AntDesign name="rightcircleo" size={24} color="black" />
+				</TouchableOpacity>
+
+				<View style={styles.selectedMarker}>
+					<FontAwesome5 name="recycle" size={20} color={"white"} />
+				</View>
 			</View>
 		</Marker>
 		: undefined;
@@ -39,7 +49,9 @@ const MapTab = props => {
 	const markers = !position ? [] :
 		filteredData
 		.map((place, index) => (
-			<Marker  key = {index} coordinate = { place.coordinate }>
+			<Marker key={index}
+				coordinate={place.coordinate}
+				onPress={e => { setSelectedPlace(place)	}}>
 				<View style={styles.marker}>
 					<FontAwesome5 name="recycle" size={20} color={"white"} />
 				</View>
@@ -70,12 +82,9 @@ const MapTab = props => {
 			};
 
 			setPosition(newPosition)
+			fetchDirections();
 		})();
 	},[]);
-
-	useEffect(() => {
-		fetchDirections();
-	}, []);
 
 	const fetchDirections = async () => {
 		try{
@@ -140,13 +149,16 @@ const MapTab = props => {
 				onSelectOption = { place => {
 					setSelectedPlace(place);
 					updateRegion(place.coordinate);
-				} }
+				}}
 				carrouselData = { filteredData }/>}
 
 			<MapLayoutBar
 				circleRadius = { circleRadius }
 				changeRadius = { value => {
 					setCircleRadius(value);
+				}}
+				onPressLocation={() => { 
+					setRegion({...position, latitudeDelta: 0.01, longitudeDelta: 0.01});
 				} }
 				onSelectOption = { place => {
 					setSelectedPlace(place);
@@ -188,7 +200,28 @@ const styles = StyleSheet.create({
 		borderRadius:40/2,
 		elevation:4
 	},
+	labelMarker: {
+		padding: 16,
+		marginBottom: 8,
 
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		
+		backgroundColor: "white",
+		borderTopStartRadius: 15,
+		borderBottomEndRadius: 15,
+
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 5,
+		},
+		shadowOpacity: 0.34,
+		shadowRadius: 6.27,
+
+		elevation: 10,
+	}
 });
 
 const lineupDirections = (data) => {
