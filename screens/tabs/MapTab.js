@@ -15,6 +15,7 @@ import LatLng from '../../classes/LatLng';
 import { getDistance, isPointWithinRadius } from 'geolib';
 
 import { BASE, GET_DIRECTIONS, GET_ONE_RP } from '../../constants/ApiRoutes';
+import { showError } from '../../constants/FlashMessages';
 
 const MapTab = ({ navigation }) => {
 	const [region, setRegion] = useState(undefined);
@@ -121,10 +122,10 @@ const MapTab = ({ navigation }) => {
 			const response = await fetch(`${BASE}${GET_ONE_RP}/${_id}`);
 			
 			if (response.ok) {
-				
+				const recyclerPlace = await response.json();
+				navigation.navigate("RecyclerPlace", { recyclerPlace: recyclerPlace.place });
 			} else { 
-				console.log("Error");
-				
+				showError("Error de conexión", `La repuesta ha sido negativa de parte del servidor.`);
 			}
 			
 		} catch (error) {
