@@ -1,18 +1,20 @@
 import React,{useEffect,useState} from 'react';
 
 import { View, StyleSheet, Dimensions } from 'react-native'
-import MapView, { Circle, Marker,} from "react-native-maps";
+import MapView, { Circle, Marker, Callout} from "react-native-maps";
 
 import * as Location from 'expo-location';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 import MapLayout from '../../components/frontLayouts/MapLayout';
 import MapLayoutBar from '../../components/frontLayouts/MapLayoutBar';
+import ModedText from '../../components/text/ModedText';
 
 import LatLng from '../../classes/LatLng';
 import { getDistance, isPointWithinRadius } from 'geolib';
 
-import { BASE, GET_DIRECTIONS } from '../../constants/ApiRoutes';
+import { BASE, GET_DIRECTIONS, GET_ONE_RP } from '../../constants/ApiRoutes';
 
 const MapTab = ({ navigation }) => {
 	const [region, setRegion] = useState(undefined);
@@ -20,11 +22,9 @@ const MapTab = ({ navigation }) => {
 	const [circleRadius, setCircleRadius] = useState(500);
 
 	const [directionsData, setDirectionData] = useState([]);
-
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
 
 	const [errorMsg, setErrorMsg] = useState(undefined);
-
 
 	let selectedMarkerRef = undefined;
 
@@ -32,11 +32,25 @@ const MapTab = ({ navigation }) => {
 		.filter(place => isPointWithinRadius(place.coordinate, position, circleRadius)) : [];
 
 	const selectedMarker = selectedPlace ?
-		<Marker coordinate={selectedPlace.coordinate} style={{ zIndex: 1 }}
+		<Marker
+			onCalloutPress={() => { navigateToRP(selectedPlace._id);}}
+			coordinate={selectedPlace.coordinate}
+			style={{ zIndex: 1 }}
 			ref={ref => { selectedMarkerRef = ref }}>
+
 			<View style={styles.selectedMarker}>
 				<FontAwesome5 name="recycle" size={20} color={"white"} />
 			</View>
+			
+			<Callout style={styles.labelMarker}>
+				<ModedText
+					style={{ flex: 5, marginEnd: 4}}>
+					{selectedPlace.name.length > 30 ? `${selectedPlace.name.substr(0, 30)}...` : selectedPlace.name}
+				</ModedText>
+				<View style={{flex: 1, height: 50, justifyContent: "center", alignItems: "center"}}>
+					<AntDesign name="rightcircleo" size={24} color="black" />
+				</View>
+			</Callout>
 		</Marker>
 		: undefined;
 
@@ -85,6 +99,7 @@ const MapTab = ({ navigation }) => {
 		
 		if (selectedMarkerRef !== undefined) { 
 			selectedMarkerRef.hideCallout();
+			selectedMarkerRef.redrawCallout();
 		}
 	}
 	
@@ -99,7 +114,23 @@ const MapTab = ({ navigation }) => {
 		}catch(e){
 			console.log(e);
 		}
-	}	
+	}
+	
+	const navigateToRP = async (_id) => {
+		try {
+			const response = await fetch(`${BASE}${GET_ONE_RP}/${_id}`);
+			
+			if (response.ok) {
+				
+			} else { 
+				console.log("Error");
+				
+			}
+			
+		} catch (error) {
+			console.log(error);
+		}
+	}
 
 	const updateRegion = ({latitude, longitude}) => {
 		setRegion({
@@ -201,8 +232,11 @@ const styles = StyleSheet.create({
 		elevation:4
 	},
 	labelMarker: {
-		padding: 16,
-		width: Dimensions.get("window").width/2,
+		position: "absolute",
+		flex: -1,
+
+		padding: 8,
+		width: Dimensions.get("window").width / 2,
 
 		flexDirection: "row",
 		justifyContent: "space-between",
