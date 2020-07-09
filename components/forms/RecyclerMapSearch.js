@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { StyleSheet, Platform, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Keyboard, TextInput, TouchableOpacity } from 'react-native';
 
 import AutocompleteInput from 'react-native-autocomplete-input';
 import ModedText from '../text/ModedText';
@@ -22,13 +22,14 @@ const RecyclerMapSearch = ({ options = [], onSelectOption }) => {
 			renderTextInput = {()=>(
 				<TextInput
 					value = { query }
-					onChangeText = { text => setQuery(text) } 
+					onChangeText={text => {setQuery(text)} } 
 					placeholder = "Busca plantas recicladoras"
 					style = { styles.textInput } />
 			)}
 			renderItem = {({item}) => (
 				<TouchableOpacity
-					onPress = {() => {
+					onPress={() => {
+						Keyboard.dismiss();
 						setQuery("");
 						onSelectOption(item)
 					}}

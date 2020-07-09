@@ -13,9 +13,17 @@ const Stack = createStackNavigator();
 const MainNavStack = props => {
 	return(
 		<NavigationContainer>
-			<Stack.Navigator>
+			<Stack.Navigator screenOptions={{
+				headerStyle: {
+					backgroundColor: "#388E3C"
+				},
+				headerTintColor: "#fff",
+				headerTitleStyle: {
+					fontFamily: "roboto-light"
+				}
+			}}>
 				<Stack.Screen name="Home" component={MainTabHome} options={{ header: () => { } }} />
-				<Stack.Screen name="RecyclerPlace" component={RecyclerPlaceScreen} />
+				<Stack.Screen name="RecyclerPlace" component={RecyclerPlaceScreen} options={{ title: "Hoja Informativa" }} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

@@ -4,14 +4,21 @@ import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
 import MainNavStack from './screens/stacks/MainNavStack';
+import { View } from 'react-native';
+import FlashMessage from 'react-native-flash-message';
 
 export default function App() {
 	const [dataLoaded, setDataLoaded] = useState(false);
 
-	const splashScreen = <AppLoading startAsync = { loadData } onFinish = { () => setDataLoaded(true) }/>
-	const mainScreen = <MainNavStack/>
+	const splashScreen = <AppLoading startAsync={loadData} onFinish={() => setDataLoaded(true)} />
+	const mainScreen = <MainNavStack />
 
-	return dataLoaded ? mainScreen : splashScreen;
+	return (
+		<View style={{ flex: 1 }}>
+			{dataLoaded ? mainScreen : splashScreen}
+			<FlashMessage position="top" />
+		</View>
+	);
 }
 
 const loadData = async () => {
