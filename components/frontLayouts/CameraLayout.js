@@ -1,6 +1,16 @@
 import React, {useState, useEffect} from 'react';
 
-import {StyleSheet, View, useWindowDimensions, TouchableOpacity, Modal, Dimensions, Image, Picker,Button} from 'react-native';
+import {
+    StyleSheet,
+    View,
+    useWindowDimensions,
+    TouchableOpacity,
+    Modal,
+    Dimensions,
+    Image,
+    Picker,
+    Button
+} from 'react-native';
 
 import {Ionicons, AntDesign} from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
@@ -9,6 +19,9 @@ import {FontAwesome} from '@expo/vector-icons';
 import TopEndVectorButton from '../buttons/TopEndVectorButton';
 import ModedText from '../text/ModedText';
 import PacmanIndicator from "react-native-indicators/src/components/pacman-indicator";
+import * as ImageManipulator from "expo-image-manipulator";
+import {SaveFormat} from "expo-image-manipulator";
+import {BASE} from "../../constants/ApiRoutes";
 
 const CameraLayout = ({flipCameraAction, camera}) => {
     const [loading, isLoading] = useState(false)
@@ -18,8 +31,10 @@ const CameraLayout = ({flipCameraAction, camera}) => {
     const [photo, setPhoto] = useState(null)
     const [materials, setMaterials] = useState([])
     const [material, setMaterial] = useState(null)
+    const [materialID, setMaterialID] = useState(null)
     const [objects, setObjects] = useState([])
     const [object, setObject] = useState(null)
+    const [prediction, setPrediction] = useState({material:"",object:"",precision:0})
 
     useEffect(() => {
         fetchMaterials()
@@ -51,10 +66,11 @@ const CameraLayout = ({flipCameraAction, camera}) => {
             <View style={{flex: 1, alignItems: "center"}}>
                 <View style={{flexDirection: "row"}}>
                     <FontAwesome name="circle" size={24} color="#b2bec3" style={{marginEnd: 8}}/>
-                    <ModedText title center centerV>Plastico</ModedText>
+                    <ModedText title center centerV>{prediction.material}</ModedText>
                 </View>
                 <View style={{marginTop: 8}}>
-                    <ModedText>Pajilla</ModedText>
+                    <ModedText center>{prediction.object}</ModedText>
+                    <ModedText center style={{marginTop:8}}>Probabilidad: {prediction.precision * 100} %</ModedText>
                 </View>
             </View>
             <View style={{flex: 1, justifyContent: "flex-end", alignItems: "flex-end", paddingEnd: 8}}>
@@ -65,19 +81,87 @@ const CameraLayout = ({flipCameraAction, camera}) => {
         </View>
     )
 
-    const pickMaterial =(itemValue) => {
+    const pickMaterial = (itemValue) => {
         setMaterial(itemValue)
-        let filter = materials.filter(m=>m.name===itemValue)
-        console.log(filter)
+        let filter = materials.filter(m => m.name === itemValue)
+        setMaterialID(filter[0]._id)
         setObjects(filter[0].items)
     }
     const takePicture = async () => {
+        setHeight("35%")
+        isLoading(true)
         if (camera) {
-            let photo = await camera.takePictureAsync()
-            setPhoto(photo)
-            //setHeight("35%")
-            //isLoading(true)
-            setModal(true)
+
+            let tempPhoto = await camera.takePictureAsync()
+            const resize = await ImageManipulator.manipulateAsync(tempPhoto.uri, [{
+                resize: {
+                    width: 480,
+                    height: 720
+                }
+            }], {
+                compress: 0.75,
+                format:ImageManipulator.SaveFormat.JPEG
+            })
+            setPhoto(resize)
+            let fd = new FormData()
+            fd.append("image", {
+                name:"image.jpg",
+                uri:resize.uri,
+                type:"image/jpeg"
+            })
+            let classifyRes = await fetch(`${BASE}/api/classifier/classify`,{
+                method:"POST",
+                headers:{
+                    "Content-Type": "multipart/form-data",
+                },
+                body:fd
+            })
+            if(classifyRes.ok){
+                if(classifyRes.status === 200){
+                    let data = await classifyRes.json()
+                    isLoading(false)
+                    setPrediction({
+                        object:data.type,
+                        material:data.material,
+                        precision: data.probability
+                    })
+                    setComplete(true)
+                }
+            }else{
+                if(classifyRes.status === 404) {
+                    setModal(true)
+                    setHeight("15%")
+                    isLoading(false)
+                }else {
+                    setHeight("15%")
+                    isLoading(false)
+                }
+            }
+
+        }else{
+            setHeight("15%")
+            isLoading(false)
+        }
+    }
+    const sendPrediction= async ()=>{
+        let fd = new FormData()
+        fd.append("image", {
+            name:"image.jpg",
+            uri:photo.uri,
+            type:"image/jpeg"
+        })
+        fd.append("materialID",materialID)
+        fd.append("item",object)
+        let trainingRes = await fetch(`${BASE}/api/classifier/saveModel`,{
+            method:"POST",
+            headers:{
+                "Content-Type": "multipart/form-data",
+            },
+            body:fd
+        })
+        if(trainingRes.ok){
+            setModal(false)
+        }else{
         }
     }
     return (
@@ -119,7 +203,7 @@ const CameraLayout = ({flipCameraAction, camera}) => {
             </View>
             <Modal transparent={true}
                    visible={modal}
-                   onRequestClose={()=>setModal(false)}
+                   onRequestClose={() => setModal(false)}
                    animationType={"fade"}
             >
                 <View style={styles.modalLayer}>
@@ -166,8 +250,11 @@ const CameraLayout = ({flipCameraAction, camera}) => {
                                         </Picker>
                                         : <></>}
                                 </View>
-                                <View style={{marginTop:16}}>
-                                    <Button title={"Enviar"} color={Colors.primaryColor} />
+                                <View style={{marginTop: 16}}>
+                                    <Button
+                                        onPress={sendPrediction}
+                                        disabled={!materialID && !object}
+                                        title={"Enviar"} color={Colors.primaryColor}/>
                                 </View>
                             </View>
                         </View>
