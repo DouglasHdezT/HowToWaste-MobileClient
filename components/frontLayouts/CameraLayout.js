@@ -223,8 +223,11 @@ const CameraLayout = ({flipCameraAction, camera}) => {
                 <View style={styles.modalLayer}>
                     <View style={styles.modalPicker}>
                         <View style={{margin: 16}}>
-                            <View>
-                                <ModedText title center centerV>¿Puedes decirme que objeto es?</ModedText>
+                            <View style={{flexDirection: "row"}}>
+                                <TouchableOpacity onPress={()=>setModal(false)}>
+                                    <AntDesign name="arrowleft" size={24} color="black" style={{marginEnd:8}} />
+                                </TouchableOpacity>
+                                <ModedText title center centerV>¿Puedes decirme qué objeto es?</ModedText>
                             </View>
                             <View style={{justifyContent: "center", alignItems: "center", marginTop: 16}}>
                                 {photo ?
@@ -314,7 +317,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.5)"
     },
     modalPicker: {
-        width: Dimensions.get('window').width - Dimensions.get('window').width / 8,
+        width: Dimensions.get('window').width - Dimensions.get('window').width / 10,
         backgroundColor: "#fff",
         borderRadius: 16,
         padding: 20
