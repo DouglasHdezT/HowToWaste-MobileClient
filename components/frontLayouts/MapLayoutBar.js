@@ -23,6 +23,7 @@ const MapLayoutBar = ({options = [], onSelectOption, circleRadius, changeRadius,
 						minimumValue = { 100 }
 						maximumValue = { 2000 }
 						step = { 100 }
+    
 						value = { circleRadius }
 						onValueChange = { changeRadius }
 					/>

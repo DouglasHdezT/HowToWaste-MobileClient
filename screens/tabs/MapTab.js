@@ -192,6 +192,9 @@ const MapTab = ({ navigation }) => {
 			</MapView>
 
 			{filteredData.length > 0 && <MapLayout
+				onPressBannerText={_id => { 
+					navigateToRP(_id);
+				} }
 				onSelectOption = { place => {
 					updateSelectedPlace(place);
 					updateRegion(place.coordinate);
