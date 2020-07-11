@@ -20,7 +20,7 @@ import { showError } from '../../constants/FlashMessages';
 const MapTab = ({ navigation }) => {
 	const [region, setRegion] = useState(undefined);
 	const [position, setPosition] = useState(undefined);
-	const [circleRadius, setCircleRadius] = useState(500);
+	const [circleRadius, setCircleRadius] = useState(1000);
 
 	const [directionsData, setDirectionData] = useState([]);
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
