@@ -60,17 +60,31 @@ const CameraLayout = ({flipCameraAction, camera}) => {
             </View>
         )
     }
+    const colorMaterial=(m)=>{
+        switch (m) {
+            case "Metales":
+                return "#e74c3c"
+            case "Vídrio":
+                return "#2ecc71"
+            case "Plástico":
+                return "#f1c40f"
+            case "Papel":
+                return "#3498db"
+            case "Orgánicos":
+                return "#ccae62"
+        }
+    }
     const analisisComplete = (
         <View style={{flex: 1, justifyContent: "center", alignItems: "center", flexDirection: "row"}}>
             <View style={{flex: 1}}/>
             <View style={{flex: 1, alignItems: "center"}}>
                 <View style={{flexDirection: "row"}}>
-                    <FontAwesome name="circle" size={24} color="#b2bec3" style={{marginEnd: 8}}/>
+                    <FontAwesome name="circle" size={24} color={colorMaterial(prediction.material)} style={{marginEnd: 8}}/>
                     <ModedText title center centerV>{prediction.material}</ModedText>
                 </View>
                 <View style={{marginTop: 8}}>
                     <ModedText center>{prediction.object}</ModedText>
-                    <ModedText center style={{marginTop:8}}>Probabilidad: {prediction.precision * 100} %</ModedText>
+                    <ModedText center style={{marginTop:8}}>Probabilidad: {(prediction.precision * 100).toFixed(2)} %</ModedText>
                 </View>
             </View>
             <View style={{flex: 1, justifyContent: "flex-end", alignItems: "flex-end", paddingEnd: 8}}>
