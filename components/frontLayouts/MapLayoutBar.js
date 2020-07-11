@@ -20,9 +20,9 @@ const MapLayoutBar = ({options = [], onSelectOption, circleRadius, changeRadius,
 						thumbTintColor = "#3F51B5"
 						minimumTrackTintColor = "#3F51B5"
 		
-						minimumValue = { 200 }
-						maximumValue = { 5000 }
-						step = { 200 }
+						minimumValue = { 100 }
+						maximumValue = { 2000 }
+						step = { 100 }
 						value = { circleRadius }
 						onValueChange = { changeRadius }
 					/>
