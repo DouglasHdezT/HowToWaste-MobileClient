@@ -26,6 +26,9 @@ const MapTab = ({ navigation }) => {
 	const [selectedPlace, setSelectedPlace] = useState(undefined);
 
 	const [errorMsg, setErrorMsg] = useState(undefined);
+	const [hasPermission, setHasPermission] = useState(undefined);
+
+
 
 	let selectedMarkerRef = undefined;
 
@@ -72,26 +75,28 @@ const MapTab = ({ navigation }) => {
 	useEffect(() => {
 		(async () => {
 			let { status } = await Location.requestPermissionsAsync();
+
+			setHasPermission(status === 'granted');
 			if (status !== 'granted') {
 				setErrorMsg('Permission to access location was denied');
+			} else { 
+				let location = await Location.getCurrentPositionAsync({});
+
+				setRegion({
+					latitude: location.coords.latitude,
+					longitude: location.coords.longitude,
+					latitudeDelta:  0.005,
+					longitudeDelta: 0.005,
+				});
+
+				const newPosition = {
+					latitude: location.coords.latitude,
+					longitude: location.coords.longitude,
+				};
+
+				setPosition(newPosition)
+				fetchDirections();
 			}
-
-			let location = await Location.getCurrentPositionAsync({});
-
-			setRegion({
-				latitude: location.coords.latitude,
-				longitude: location.coords.longitude,
-				latitudeDelta:  0.005,
-				longitudeDelta: 0.005,
-			});
-
-			const newPosition = {
-				latitude: location.coords.latitude,
-				longitude: location.coords.longitude,
-			};
-
-			setPosition(newPosition)
-			fetchDirections();
 		})();
 	},[]);
 
@@ -141,7 +146,16 @@ const MapTab = ({ navigation }) => {
 		});
 	};
 
-
+	if (hasPermission === undefined) {
+		return <View style={{flex: 1}} />;
+	}
+	if (hasPermission === false) {
+		return (
+			<View style={{flex: 1, justifyContent: "center", alignItems: "center"}} >
+				<ModedText>No tengo permisos para mapas</ModedText>
+			</View>
+		);
+	}
 
 	return (
 		<View style={styles.container}>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 
 import CameraLayout from '../../components/frontLayouts/CameraLayout';
+import ModedText from '../../components/text/ModedText';
 
 const CameraTab = (props) => {
 	const [hasPermission, setHasPermission] = useState(null);
@@ -21,10 +22,14 @@ const CameraTab = (props) => {
 	}, []);
 
 	if (hasPermission === null) {
-		return <View />;
+		return <View style={{flex: 1}} />;
 	}
 	if (hasPermission === false) {
-		return <Text>No access to camera</Text>;
+		return (
+			<View style={{flex: 1, justifyContent: "center", alignItems: "center"}} >
+				<ModedText>No tengo permisos para cámara</ModedText>
+			</View>
+		);
 	}
 	return (
 		<View
