@@ -3,9 +3,10 @@ import React from 'react';
 import { StyleSheet, FlatList, View } from 'react-native';
 import RecyclerPlantCard from '../cards/RecyclerPlantCard';
 
-const RecyclerPlacesCarousel = ({data, onSelectOption}) => {
+const RecyclerPlacesCarousel = ({data, onSelectOption, onPressText}) => {
 	const _renderItem = (item, index) => (
 		<RecyclerPlantCard
+			onPressText={() => { onPressText(item._id); }}
 			onPressMarker = { () => onSelectOption(item) }
 			unique = {data.length === 1 ? true : false}
 			last = {index !== (data.length -1) ? false : true}

@@ -4,10 +4,11 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 
 import RecyclerPlacesCarousel from '../carousels/RecyclerPlacesCarousel';
 
-const MapLayout = ({ carrouselData, onSelectOption }) => {
+const MapLayout = ({ carrouselData, onSelectOption, onPressBannerText }) => {
 	return(
 		<View style = { styles.container }>
 			<RecyclerPlacesCarousel 
+				onPressText={ onPressBannerText }
 				onSelectOption = { onSelectOption }
 				data = { carrouselData }/>
 		</View>
