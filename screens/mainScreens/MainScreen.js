@@ -6,6 +6,8 @@ import { FontAwesome, AntDesign } from '@expo/vector-icons';
 
 import MapTab from '../tabs/MapTab';
 import CameraTab from '../tabs/CameraTab';
+import InfoTab from '../tabs/infoTab';
+
 import Colors from '../../constants/Colors';
 
 const Tab = createMaterialBottomTabNavigator();
@@ -26,7 +28,7 @@ const MainScreen = () => {
 			}} >
 			<Tab.Screen name = "Mapa" component = {MapTab} options = {{ tabBarIcon: ({focus, color}) => (<FontAwesome name="map" size={24} color={color} />)}}/>
 			<Tab.Screen name = "Camara" component = {CameraTab} options = {{ tabBarIcon: ({focus, color}) => (<AntDesign name="camera" size={24} color={color} />) }}/>
-			<Tab.Screen name = "Info" component = {MapTab} options = {{ tabBarIcon: ({focus, color}) => (<FontAwesome name="info-circle" size={24} color={color} />)}}/>
+			<Tab.Screen name = "Info" component = {InfoTab} options = {{ tabBarIcon: ({focus, color}) => (<FontAwesome name="info-circle" size={24} color={color} />)}}/>
 		</Tab.Navigator>
 	)
 }
