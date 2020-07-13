@@ -222,11 +222,8 @@ const CameraLayout = ({flipCameraAction, camera}) => {
             >
                 <View style={styles.modalLayer}>
                     <View style={styles.modalPicker}>
-                        <View style={{margin: 16}}>
+						<View style={{ margin: 16 }}>
                             <View style={{flexDirection: "row"}}>
-                                <TouchableOpacity onPress={()=>setModal(false)}>
-                                    <AntDesign name="arrowleft" size={24} color="black" style={{marginEnd:8}} />
-                                </TouchableOpacity>
                                 <ModedText title center centerV>¿Puedes decirme qué objeto es?</ModedText>
                             </View>
                             <View style={{justifyContent: "center", alignItems: "center", marginTop: 16}}>
@@ -271,7 +268,12 @@ const CameraLayout = ({flipCameraAction, camera}) => {
                                     <Button
                                         onPress={sendPrediction}
                                         disabled={!materialID && !object}
-                                        title={"Enviar"} color={Colors.primaryColor}/>
+										title={"Enviar"} color={Colors.primaryColor} />
+									<View style={{marginTop: 4}}>
+										<Button
+											onPress={() => setModal(false)}
+											title = "Cerrar"/>
+									</View>
                                 </View>
                             </View>
                         </View>
