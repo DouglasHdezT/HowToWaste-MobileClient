@@ -9,23 +9,22 @@ import CameraLayout from '../../components/frontLayouts/CameraLayout';
 import ModedText from '../../components/text/ModedText';
 
 const CameraTab = (props) => {
-	const [hasPermission, setHasPermission] = useState(null);
+	const [hasPermission, setHasPermission] = useState(undefined);
 	const [type, setType] = useState(Camera.Constants.Type.back);
 	const [{width, height}, setDimensions] = useState({width: 0, height: 0});
 	const isFocused = useIsFocused();
 	const [cameraRef, setCameraRef] = useState(null)
 	
-	console.log(isFocused);
-
 	useEffect(() => {
 		(async () => {
 			const { status } = await Camera.requestPermissionsAsync();
 			setHasPermission(status === 'granted');
+			console.log(status);
 		})();
 	}, []);
 
-	if (hasPermission === null) {
-		return <View style={{flex: 1}} />;
+	if (hasPermission === undefined) {
+		return <View/>;
 	}
 	if (hasPermission === false) {
 		return (
@@ -34,6 +33,7 @@ const CameraTab = (props) => {
 			</View>
 		);
 	}
+	
 	return (
 		<View
 			onLayout = { (event) => {
