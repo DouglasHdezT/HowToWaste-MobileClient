@@ -23,6 +23,8 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "Pequeña aplicación para aprender a reciclar objetos que pronto serán desechados",
+    "githubUrl": "https://github.com/DouglasHdezT/HowToWaste-MobileClient"
   }
 }

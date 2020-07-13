@@ -13,7 +13,10 @@ const CameraTab = (props) => {
 	const [type, setType] = useState(Camera.Constants.Type.back);
 	const [{width, height}, setDimensions] = useState({width: 0, height: 0});
 	const isFocused = useIsFocused();
-	const [cameraRef,setCameraRef ] = useState(null)
+	const [cameraRef, setCameraRef] = useState(null)
+	
+	console.log(isFocused);
+
 	useEffect(() => {
 		(async () => {
 			const { status } = await Camera.requestPermissionsAsync();
