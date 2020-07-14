@@ -1,4 +1,3 @@
-/*
 Copyright (c) 2020 AKHeroes.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of 
@@ -17,35 +16,3 @@ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
 FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 DEALINGS IN THE SOFTWARE.
-*/
-
-import React from 'react';
-
-import { StyleSheet, FlatList, View } from 'react-native';
-import RecyclerPlantCard from '../cards/RecyclerPlantCard';
-
-const RecyclerPlacesCarousel = ({data, onSelectOption, onPressText}) => {
-	const _renderItem = (item, index) => (
-		<RecyclerPlantCard
-			onPressText={() => { onPressText(item._id); }}
-			onPressMarker = { () => onSelectOption(item) }
-			unique = {data.length === 1 ? true : false}
-			last = {index !== (data.length -1) ? false : true}
-			name = {item.name} 
-			direction = {item.direction}/>)
-	
-	return(
-		<View style = {{ flex: 1 }}>
-			<FlatList
-				horizontal
-				data = { data }
-				renderItem = { ({item, index}) => _renderItem(item, index) }
-				keyExtractor = { (item, index) => `${item._id}.${index}` }
-			/>
-		</View>	
-	);
-}
-
-const styles = StyleSheet.create({});
-
-export default RecyclerPlacesCarousel;
