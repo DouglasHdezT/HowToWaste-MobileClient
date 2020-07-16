@@ -60,7 +60,7 @@ const InfoTab = props => {
 			</View>
 			<View style={{alignItems:"center",marginTop:32}}>
 				<TouchableOpacity
-					onPress={()=>Linking.openURL('https://douglashdezt.github.io/HowToWaste/\n')}
+					onPress={()=>Linking.openURL('https://douglashdezt.github.io/HowToWaste')}
 				>
 					<MaterialCommunityIcons name="file-document-box-check" size={50} color="black" />
 				</TouchableOpacity>
